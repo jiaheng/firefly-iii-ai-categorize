@@ -179,7 +179,7 @@ environment:
 
 If you were previously using this application, it has been upgraded from the legacy `gpt-3.5-turbo-instruct` model to modern chat completion models. The new default model (`gpt-4o-mini`) is:
 - More accurate and capable
-- Faster response times  
+- Faster response times
 - More cost-effective (lower pricing per token)
 - Better maintained and future-proof
 

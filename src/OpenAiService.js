@@ -35,20 +35,17 @@ export default class OpenAiService {
                 max_tokens: 50 // Keep responses short
             });
 
-            let guess = response.choices[0].message.content;
-            guess = guess.replace("\n", "");
-            guess = guess.trim();
+            const messageContent = response.choices[0].message.content;
+            let guess = messageContent.replace("\n", "").trim();
 
             if (categories.indexOf(guess) === -1) {
-                console.warn(`OpenAI could not classify the transaction. 
-                Prompt: ${userPrompt}
-                OpenAI's guess: ${guess}`)
+                console.warn(`OpenAI could not classify the transaction. Prompt: ${userPrompt}, OpenAI's guess: ${guess}`);
                 return null;
             }
 
             return {
                 prompt: userPrompt,
-                response: response.choices[0].message.content,
+                response: messageContent,
                 category: guess
             };
 
