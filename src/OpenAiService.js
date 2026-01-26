@@ -1,43 +1,54 @@
-import {Configuration, OpenAIApi} from "openai";
+import OpenAI from "openai";
 import {getConfigVariable} from "./util.js";
 
 export default class OpenAiService {
     #openAi;
-    #model = "gpt-3.5-turbo-instruct";
+    #model;
 
     constructor() {
-        const apiKey = getConfigVariable("OPENAI_API_KEY")
+        const apiKey = getConfigVariable("OPENAI_API_KEY");
+        // Default to gpt-4o-mini (modern, cheaper, faster) but allow configuration
+        this.#model = getConfigVariable("OPENAI_MODEL", "gpt-4o-mini");
 
-        const configuration = new Configuration({
+        this.#openAi = new OpenAI({
             apiKey
         });
-
-        this.#openAi = new OpenAIApi(configuration)
     }
 
     async classify(categories, destinationName, description) {
         try {
-            const prompt = this.#generatePrompt(categories, destinationName, description);
+            const userPrompt = this.#generatePrompt(categories, destinationName, description);
 
-            const response = await this.#openAi.createCompletion({
+            const response = await this.#openAi.chat.completions.create({
                 model: this.#model,
-                prompt
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a financial transaction categorization assistant. Your task is to categorize bank transactions into predefined categories. You must respond with ONLY the exact category name from the provided list, nothing else."
+                    },
+                    {
+                        role: "user",
+                        content: userPrompt
+                    }
+                ],
+                temperature: 0.3, // Lower temperature for more consistent categorization
+                max_tokens: 50 // Keep responses short
             });
 
-            let guess = response.data.choices[0].text;
+            let guess = response.choices[0].message.content;
             guess = guess.replace("\n", "");
             guess = guess.trim();
 
             if (categories.indexOf(guess) === -1) {
                 console.warn(`OpenAI could not classify the transaction. 
-                Prompt: ${prompt}
+                Prompt: ${userPrompt}
                 OpenAIs guess: ${guess}`)
                 return null;
             }
 
             return {
-                prompt,
-                response: response.data.choices[0].text,
+                prompt: userPrompt,
+                response: response.choices[0].message.content,
                 category: guess
             };
 
