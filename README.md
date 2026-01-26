@@ -153,6 +153,34 @@ If you have to run the application on a different port than the default port `30
 - `FIREFLY_URL`: The URL to your Firefly III instance. Example: `https://firefly.example.com`. (required)
 - `FIREFLY_PERSONAL_TOKEN`: A Firefly III Personal Access Token. (required)
 - `OPENAI_API_KEY`: The OpenAI API Key to authenticate against OpenAI. (required)
+- `OPENAI_MODEL`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
 - `ENABLE_UI`: If the user interface should be enabled. (Default: `false`)
 - `FIREFLY_TAG`: The tag to assign to the processed transactions. (Default: `AI categorized`)
 - `PORT`: The port where the application listens. (Default: `3000`)
+
+## Model Selection
+
+The application now uses modern OpenAI chat models for better performance and cost-efficiency. The default model is `gpt-4o-mini`, which provides excellent accuracy at a lower cost compared to legacy models.
+
+### Recommended Models
+
+- **gpt-4o-mini** (default): Best balance of cost and performance for most users. Cheaper and faster than the legacy model.
+- **gpt-4o**: Most capable model, recommended if you need higher accuracy or have complex categorization needs.
+- **gpt-3.5-turbo**: A more economical alternative to gpt-4o-mini, still more modern than the legacy model.
+
+You can configure the model by setting the `OPENAI_MODEL` environment variable:
+
+```yaml
+environment:
+  OPENAI_MODEL: "gpt-4o-mini"  # or "gpt-4o", "gpt-3.5-turbo"
+```
+
+### Migration from Legacy Model
+
+If you were previously using this application, it has been upgraded from the legacy `gpt-3.5-turbo-instruct` model to modern chat completion models. The new default model (`gpt-4o-mini`) is:
+- More accurate and capable
+- Faster response times
+- More cost-effective (lower pricing per token)
+- Better maintained and future-proof
+
+No configuration changes are required - the application will automatically use the new model. However, if you prefer a different model, you can set the `OPENAI_MODEL` environment variable as described above.
