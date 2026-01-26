@@ -35,6 +35,12 @@ export default class OpenAiService {
                 max_tokens: 50 // Keep responses short
             });
 
+            // Validate response structure
+            if (!response.choices || !response.choices[0] || !response.choices[0].message || !response.choices[0].message.content) {
+                console.error('Invalid response structure from OpenAI:', JSON.stringify(response));
+                return null;
+            }
+
             const messageContent = response.choices[0].message.content;
             let guess = messageContent.replace(/[\n\r]+/g, "").trim();
 
