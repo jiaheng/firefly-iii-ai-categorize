@@ -70,7 +70,7 @@ export default class OpenAiService {
     #generatePrompt(categories, destinationName, description) {
         return `Given I want to categorize transactions on my bank account into these categories: ${categories.join(", ")}
 In which category would a transaction from "${destinationName}" with the subject "${description}" fall into?
-Just output the name of the category. Does not have to be a complete sentence.`;
+Just output the category name.`;
     }
 }
 
