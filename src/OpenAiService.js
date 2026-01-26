@@ -36,7 +36,7 @@ export default class OpenAiService {
             });
 
             const messageContent = response.choices[0].message.content;
-            let guess = messageContent.replace("\n", "").trim();
+            let guess = messageContent.replace(/[\n\r]+/g, "").trim();
 
             if (categories.indexOf(guess) === -1) {
                 console.warn(`OpenAI could not classify the transaction. Prompt: ${userPrompt}, OpenAI's guess: ${guess}`);
