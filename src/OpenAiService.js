@@ -42,7 +42,7 @@ export default class OpenAiService {
             if (categories.indexOf(guess) === -1) {
                 console.warn(`OpenAI could not classify the transaction. 
                 Prompt: ${userPrompt}
-                OpenAIs guess: ${guess}`)
+                OpenAI's guess: ${guess}`)
                 return null;
             }
 
@@ -56,7 +56,7 @@ export default class OpenAiService {
             if (error.response) {
                 console.error(error.response.status);
                 console.error(error.response.data);
-                throw new OpenAiException(error.status, error.response, error.response.data);
+                throw new OpenAiException(error.response.status, error.response, error.response.data);
             } else {
                 console.error(error.message);
                 throw new OpenAiException(null, null, error.message);
