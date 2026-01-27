@@ -39,6 +39,7 @@ const CONFIG_MAPPINGS = {
     'OPENAI_MODEL': ['openai', 'model'],
     'OPENAI_MAX_COMPLETION_TOKENS': ['openai', 'max_completion_tokens'],
     'OPENAI_TEMPERATURE': ['openai', 'temperature'],
+    'OPENAI_WEB_SEARCH_OPTIONS': ['openai', 'web_search_options'],
     'PORT': ['app', 'port'],
     'ENABLE_UI': ['app', 'enable_ui'],
     'FILTER_MIN_AMOUNT': ['filters', 'min_amount'],
@@ -148,6 +149,7 @@ export function getOpenAiConfig(configName, defaultValue = null) {
         const envValue = process.env[envVarName];
         
         // Try to parse JSON for objects (with additional validation)
+        // Note: Only objects are supported, not arrays, as OpenAI config parameters are objects
         const trimmedValue = envValue.trim();
         if ((trimmedValue.startsWith('{') && trimmedValue.endsWith('}'))) {
             try {
