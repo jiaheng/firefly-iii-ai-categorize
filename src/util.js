@@ -97,13 +97,15 @@ export function getFilterConfig(filterName, defaultValue = null) {
     // Check environment variable first (for consistency with getConfigVariable)
     // Environment variables for filters use FILTER_ prefix
     const envVarName = `FILTER_${filterName.toUpperCase()}`;
-    if (process.env.hasOwnProperty(envVarName) && process.env[envVarName] != null) {
+    if (envVarName in process.env && process.env[envVarName] != null) {
         const envValue = process.env[envVarName];
         
-        // Try to parse JSON for arrays and objects
-        if (envValue.startsWith('[') || envValue.startsWith('{')) {
+        // Try to parse JSON for arrays and objects (with additional validation)
+        const trimmedValue = envValue.trim();
+        if ((trimmedValue.startsWith('[') && trimmedValue.endsWith(']')) || 
+            (trimmedValue.startsWith('{') && trimmedValue.endsWith('}'))) {
             try {
-                return JSON.parse(envValue);
+                return JSON.parse(trimmedValue);
             } catch (e) {
                 console.warn(`Failed to parse ${envVarName} as JSON, using as string:`, e.message);
                 return envValue;
