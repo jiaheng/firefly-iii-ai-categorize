@@ -66,9 +66,52 @@ Tip: Make sure to set budget limits to prevent suprises at the end of the month.
 
 ### 3. Start the application via Docker
 
-#### 3.1 Docker Compose
+#### Configuration Methods
+
+The application supports two ways of configuration:
+
+**Option A: Configuration File (Recommended)**
+
+1. Copy the example configuration file:
+   ```bash
+   cp config.example.yaml config.yaml
+   ```
+
+2. Edit `config.yaml` with your actual values:
+   ```yaml
+   firefly:
+     url: "https://firefly.example.com"
+     personal_token: "eyabc123..."
+   
+   openai:
+     api_key: "sk-abc123..."
+     model: "gpt-4o-mini"
+   ```
+
+3. Mount the config file when running the container (see examples below)
+
+**Option B: Environment Variables**
+
+You can also use environment variables for configuration. Environment variables will override values from the config file if both are present.
+
+#### 3.1 Docker Compose (with config file)
 
 Create a new file `docker-compose.yml` with this content (or add to existing docker-compose file):
+
+```yaml
+version: '3.3'
+
+services:
+  categorizer:
+    image: ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+```
+
+Alternatively, you can still use environment variables:
 
 ```yaml
 version: '3.3'
@@ -85,24 +128,30 @@ services:
       OPENAI_API_KEY: "sk-abc123..."
 ```
 
-Make sure to set the environment variables correctly.
-
 Run `docker-compose up -d`.
 
 Now the application is running and accessible at port 3000.
 
-#### 3.2 Manually via Docker
+#### 3.2 Manually via Docker (with config file)
 
-Run this Docker command to start the application container. Edit the environment variables to match the credentials
-created before.
+First, create your `config.yaml` file in the current directory. Then run:
 
 ```shell
 docker run -d \
--p 3000:3000 \
--e FIREFLY_URL=https://firefly.example.com \
--e FIREFLY_PERSONAL_TOKEN=eyabc123... \
--e OPENAI_API_KEY=sk-abc123... \
-ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
+  -p 3000:3000 \
+  -v $(pwd)/config.yaml:/app/config.yaml:ro \
+  ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
+```
+
+Alternatively, you can still use environment variables:
+
+```shell
+docker run -d \
+  -p 3000:3000 \
+  -e FIREFLY_URL=https://firefly.example.com \
+  -e FIREFLY_PERSONAL_TOKEN=eyabc123... \
+  -e OPENAI_API_KEY=sk-abc123... \
+  ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
 ```
 
 ### 4. Set up the webhook
@@ -148,15 +197,55 @@ You can configure the name of this tag by setting the environment variable `FIRE
 
 If you have to run the application on a different port than the default port `3000` set the environment variable `PORT`.
 
-## Full list of environment variables
+## Configuration
 
-- `FIREFLY_URL`: The URL to your Firefly III instance. Example: `https://firefly.example.com`. (required)
-- `FIREFLY_PERSONAL_TOKEN`: A Firefly III Personal Access Token. (required)
-- `OPENAI_API_KEY`: The OpenAI API Key to authenticate against OpenAI. (required)
-- `OPENAI_MODEL`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
-- `ENABLE_UI`: If the user interface should be enabled. (Default: `false`)
-- `FIREFLY_TAG`: The tag to assign to the processed transactions. (Default: `AI categorized`)
-- `PORT`: The port where the application listens. (Default: `3000`)
+### Configuration File (Recommended)
+
+The application can be configured using a `config.yaml` file. Copy the `config.example.yaml` to `config.yaml` and update it with your values:
+
+```yaml
+firefly:
+  url: "https://firefly.example.com"
+  personal_token: "your-token-here"
+  tag: "AI categorized"
+
+openai:
+  api_key: "your-api-key-here"
+  model: "gpt-4o-mini"
+
+app:
+  port: 3000
+  enable_ui: false
+```
+
+Mount this file to `/app/config.yaml` in your Docker container.
+
+You can also customize the config file location using the `CONFIG_FILE_PATH` environment variable:
+
+```shell
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/my-config.yaml:/app/my-config.yaml:ro \
+  -e CONFIG_FILE_PATH=/app/my-config.yaml \
+  ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
+```
+
+### Environment Variables (Alternative)
+
+You can also use environment variables for configuration. Environment variables will **override** values from the config file if both are present.
+
+## Full list of configuration options
+
+- `CONFIG_FILE_PATH`: Path to the configuration file. (Default: `/app/config.yaml`)
+- `FIREFLY_URL` / `firefly.url`: The URL to your Firefly III instance. Example: `https://firefly.example.com`. (required)
+- `FIREFLY_PERSONAL_TOKEN` / `firefly.personal_token`: A Firefly III Personal Access Token. (required)
+- `OPENAI_API_KEY` / `openai.api_key`: The OpenAI API Key to authenticate against OpenAI. (required)
+- `OPENAI_MODEL` / `openai.model`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
+- `ENABLE_UI` / `app.enable_ui`: If the user interface should be enabled. (Default: `false`)
+- `FIREFLY_TAG` / `firefly.tag`: The tag to assign to the processed transactions. (Default: `AI categorized`)
+- `PORT` / `app.port`: The port where the application listens. (Default: `3000`)
+
+**Note:** For each option, you can use either the environment variable format (e.g., `FIREFLY_URL`) or the config file path (e.g., `firefly.url`).
 
 ## Model Selection
 

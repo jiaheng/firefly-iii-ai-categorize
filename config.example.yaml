@@ -1,0 +1,41 @@
+# Firefly III AI Categorization - Configuration File
+# Copy this file to 'config.yaml' and update with your actual values
+# Note: Environment variables will override these values if set
+
+# Firefly III Configuration
+firefly:
+  # The URL to your Firefly III instance
+  # Example: https://firefly.example.com
+  url: ""
+  
+  # Your Firefly III Personal Access Token
+  # You can generate this from: Options > Profile > OAuth > Personal Access Tokens
+  personal_token: ""
+  
+  # The tag to assign to automatically categorized transactions
+  # Default: "AI categorized"
+  tag: "AI categorized"
+
+# OpenAI Configuration
+openai:
+  # Your OpenAI API Key
+  # Get this from: https://platform.openai.com/account/api-keys
+  api_key: ""
+  
+  # The OpenAI model to use for categorization
+  # Recommended options:
+  #   - gpt-4o-mini (default): Best balance of cost and performance
+  #   - gpt-4o: Most capable model for complex categorization
+  #   - gpt-3.5-turbo: More economical alternative
+  # Default: gpt-4o-mini
+  model: "gpt-4o-mini"
+
+# Application Configuration
+app:
+  # The port where the application listens
+  # Default: 3000
+  port: 3000
+  
+  # Enable the web UI for monitoring
+  # Default: false
+  enable_ui: false
