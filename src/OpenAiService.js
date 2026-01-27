@@ -51,9 +51,13 @@ export default class OpenAiService {
                         content: userPrompt
                     }
                 ],
-                temperature: this.#temperature,
                 max_completion_tokens: this.#maxCompletionTokens
             };
+            
+            // Add temperature if configured (omit if null to support models that don't accept it)
+            if (this.#temperature !== null && this.#temperature !== undefined) {
+                requestParams.temperature = this.#temperature;
+            }
             
             // Add web_search_options if configured
             if (this.#webSearchOptions) {

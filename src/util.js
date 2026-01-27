@@ -149,9 +149,14 @@ export function getOpenAiConfig(configName, defaultValue = null) {
     if (envVarName in process.env && process.env[envVarName] != null) {
         const envValue = process.env[envVarName];
         
+        // Handle explicit "null" string value to allow omitting parameters
+        const trimmedValue = envValue.trim();
+        if (trimmedValue.toLowerCase() === 'null' || trimmedValue === '') {
+            return null;
+        }
+        
         // Try to parse JSON for objects (with additional validation)
         // Note: Only objects are supported, not arrays, as OpenAI config parameters are objects
-        const trimmedValue = envValue.trim();
         if ((trimmedValue.startsWith('{') && trimmedValue.endsWith('}'))) {
             try {
                 return JSON.parse(trimmedValue);
@@ -162,8 +167,8 @@ export function getOpenAiConfig(configName, defaultValue = null) {
         }
         
         // Try to parse as number (only if it's a valid numeric string)
-        if (envValue.trim() !== '' && !isNaN(envValue)) {
-            return parseFloat(envValue);
+        if (trimmedValue !== '' && !isNaN(trimmedValue)) {
+            return parseFloat(trimmedValue);
         }
         
         // Return as string
