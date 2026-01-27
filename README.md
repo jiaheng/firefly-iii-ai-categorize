@@ -216,6 +216,10 @@ openai:
 app:
   port: 3000
   enable_ui: false
+
+filters:
+  min_amount: 5.0  # Skip transactions below $5.00
+  exclude_destinations: ["Coffee Shop", "Vending Machine"]  # Skip these destinations
 ```
 
 Mount this file to `/app/config.yaml` in your Docker container.
@@ -244,6 +248,22 @@ You can also use environment variables for configuration. Environment variables 
 - `ENABLE_UI` / `app.enable_ui`: If the user interface should be enabled. (Default: `false`)
 - `FIREFLY_TAG` / `firefly.tag`: The tag to assign to the processed transactions. (Default: `AI categorized`)
 - `PORT` / `app.port`: The port where the application listens. (Default: `3000`)
+
+### Transaction Filtering Options
+
+These optional filters allow you to control which transactions are sent to OpenAI for categorization:
+
+- `filters.min_amount`: Minimum transaction amount threshold. Transactions with an amount below this value will not be sent to OpenAI. Set to `0` or omit to disable amount filtering. (Default: `0`)
+- `filters.exclude_destinations`: List of destination names to exclude from categorization. Transactions with destination names matching any value in this list (exact match, case-sensitive) will be skipped. Set to `[]` or omit to disable destination filtering. (Default: `[]`)
+
+**Example:**
+```yaml
+filters:
+  min_amount: 5.0  # Skip transactions below $5.00
+  exclude_destinations: ["Coffee Shop", "Vending Machine", "ATM Withdrawal"]
+```
+
+**Note:** All filters are applied after the existing category check. Transactions that already have a category will always be skipped, regardless of filter settings.
 
 **Note:** For each option, you can use either the environment variable format (e.g., `FIREFLY_URL`) or the config file path (e.g., `firefly.url`).
 

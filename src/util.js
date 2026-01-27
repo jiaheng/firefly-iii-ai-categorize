@@ -38,7 +38,9 @@ const CONFIG_MAPPINGS = {
     'OPENAI_API_KEY': ['openai', 'api_key'],
     'OPENAI_MODEL': ['openai', 'model'],
     'PORT': ['app', 'port'],
-    'ENABLE_UI': ['app', 'enable_ui']
+    'ENABLE_UI': ['app', 'enable_ui'],
+    'FILTER_MIN_AMOUNT': ['filters', 'min_amount'],
+    'FILTER_EXCLUDE_DESTINATIONS': ['filters', 'exclude_destinations']
 };
 
 function getFromConfigFile(name) {
@@ -84,4 +86,18 @@ export function getConfigVariable(name, defaultValue = null) {
     }
 
     return defaultValue;
+}
+
+/**
+ * Get filter configuration directly from the config file
+ * This function returns the raw value without string conversion
+ * Useful for getting arrays and numbers
+ */
+export function getFilterConfig(filterName, defaultValue = null) {
+    if (!configFileData || !configFileData.filters) {
+        return defaultValue;
+    }
+
+    const value = configFileData.filters[filterName];
+    return value !== undefined ? value : defaultValue;
 }
