@@ -45,9 +45,14 @@ openai:
   # Web search options for enhanced categorization (optional)
   # Enables the model to use web search for better context
   # Uncomment and configure if you want to enable web search
+  # Note: Requires a model that supports web search (e.g., gpt-4o-search-preview)
   # web_search_options:
   #   user_location:
-  #     country: "US"  # ISO 3166-1 alpha-2 country code (e.g., "US", "GB", "CA")
+  #     type: "approximate"
+  #     approximate:
+  #       country: "US"    # ISO 3166-1 alpha-2 country code (required)
+  #       city: "Seattle"  # City name (optional, recommended for better results)
+  #       region: "WA"     # State/region (optional, recommended for better results)
 
 # Application Configuration
 app:

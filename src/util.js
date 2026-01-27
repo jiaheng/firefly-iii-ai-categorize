@@ -184,6 +184,17 @@ export function getOpenAiConfig(configName, defaultValue = null) {
 /**
  * Validate web_search_options object
  * Ensures all required fields for the web_search_options parameter are provided
+ * According to OpenAI API docs, the structure is:
+ * {
+ *   user_location: {
+ *     type: "approximate",
+ *     approximate: {
+ *       country: "US",  // required
+ *       city: "...",    // optional
+ *       region: "..."   // optional
+ *     }
+ *   }
+ * }
  * @param {object} webSearchOptions - The web search options object to validate
  * @returns {boolean} - Whether the object is valid
  * @throws {Error} - If validation fails
@@ -203,13 +214,31 @@ export function validateWebSearchOptions(webSearchOptions) {
             throw new Error('web_search_options.user_location must be an object');
         }
         
-        // Validate required fields for user_location
-        if (!webSearchOptions.user_location.country) {
-            throw new Error('web_search_options.user_location.country is required when user_location is provided');
+        // Validate required field: type
+        if (!webSearchOptions.user_location.type) {
+            throw new Error('web_search_options.user_location.type is required (must be "approximate")');
         }
         
-        if (typeof webSearchOptions.user_location.country !== 'string') {
-            throw new Error('web_search_options.user_location.country must be a string');
+        if (webSearchOptions.user_location.type !== 'approximate') {
+            throw new Error('web_search_options.user_location.type must be "approximate"');
+        }
+        
+        // Validate required field: approximate
+        if (!webSearchOptions.user_location.approximate) {
+            throw new Error('web_search_options.user_location.approximate is required');
+        }
+        
+        if (typeof webSearchOptions.user_location.approximate !== 'object') {
+            throw new Error('web_search_options.user_location.approximate must be an object');
+        }
+        
+        // Validate required field: approximate.country
+        if (!webSearchOptions.user_location.approximate.country) {
+            throw new Error('web_search_options.user_location.approximate.country is required');
+        }
+        
+        if (typeof webSearchOptions.user_location.approximate.country !== 'string') {
+            throw new Error('web_search_options.user_location.approximate.country must be a string');
         }
     }
     
