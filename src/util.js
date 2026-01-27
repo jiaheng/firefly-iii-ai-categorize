@@ -39,6 +39,7 @@ const CONFIG_MAPPINGS = {
     'OPENAI_MODEL': ['openai', 'model'],
     'OPENAI_MAX_COMPLETION_TOKENS': ['openai', 'max_completion_tokens'],
     'OPENAI_TEMPERATURE': ['openai', 'temperature'],
+    'OPENAI_PASS_NOTE_TO_OPENAI': ['openai', 'pass_note_to_openai'],
     'OPENAI_WEB_SEARCH_OPTIONS': ['openai', 'web_search_options'],
     'PORT': ['app', 'port'],
     'ENABLE_UI': ['app', 'enable_ui'],

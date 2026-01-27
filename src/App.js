@@ -150,7 +150,8 @@ export default class App {
         }
 
         const destinationName = req.body.content.transactions[0].destination_name;
-        const description = req.body.content.transactions[0].description
+        const description = req.body.content.transactions[0].description;
+        const note = req.body.content.transactions[0].notes || null;
 
         const job = this.#jobList.createJob({
             destinationName,
@@ -161,8 +162,12 @@ export default class App {
             this.#jobList.setJobInProgress(job.id);
 
             const categories = await this.#firefly.getCategories();
+            
+            // Check if we should pass the note to OpenAI
+            const passNoteToOpenAi = getConfigVariable("OPENAI_PASS_NOTE_TO_OPENAI", "false") === "true";
+            const noteToPass = passNoteToOpenAi ? note : null;
 
-            const {category, prompt, response} = await this.#openAi.classify(Array.from(categories.keys()), destinationName, description)
+            const {category, prompt, response} = await this.#openAi.classify(Array.from(categories.keys()), destinationName, description, noteToPass)
 
             const newData = Object.assign({}, job.data);
             newData.category = category;
