@@ -105,14 +105,14 @@ export function getFilterConfig(filterName, defaultValue = null) {
             try {
                 return JSON.parse(envValue);
             } catch (e) {
-                console.warn(`Failed to parse ${envVarName} as JSON:`, e.message);
+                console.warn(`Failed to parse ${envVarName} as JSON, using as string:`, e.message);
+                return envValue;
             }
         }
         
-        // Try to parse as number
-        const numValue = Number(envValue);
-        if (!isNaN(numValue)) {
-            return numValue;
+        // Try to parse as number (only if it's a valid numeric string)
+        if (envValue.trim() !== '' && !isNaN(envValue)) {
+            return parseFloat(envValue);
         }
         
         // Return as string
