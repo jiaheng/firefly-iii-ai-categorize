@@ -219,6 +219,7 @@ app:
 
 filters:
   min_amount: 5.0  # Skip transactions below $5.00
+  max_amount: 1000.0  # Skip transactions above $1000.00
   exclude_destinations: ["Coffee Shop", "Vending Machine"]  # Skip these destinations
 ```
 
@@ -254,12 +255,14 @@ You can also use environment variables for configuration. Environment variables 
 These optional filters allow you to control which transactions are sent to OpenAI for categorization:
 
 - `FILTER_MIN_AMOUNT` / `filters.min_amount`: Minimum transaction amount threshold. Transactions with an amount below this value will not be sent to OpenAI. Set to `0` or omit to disable amount filtering. (Default: `0`)
+- `FILTER_MAX_AMOUNT` / `filters.max_amount`: Maximum transaction amount threshold. Transactions with an amount above this value will not be sent to OpenAI. Set to `0` or omit to disable amount filtering. (Default: `0`)
 - `FILTER_EXCLUDE_DESTINATIONS` / `filters.exclude_destinations`: List of destination names to exclude from categorization. Transactions with destination names matching any value in this list (exact match, case-sensitive) will be skipped. Set to `[]` or omit to disable destination filtering. (Default: `[]`)
 
 **Example in config file:**
 ```yaml
 filters:
   min_amount: 5.0  # Skip transactions below $5.00
+  max_amount: 1000.0  # Skip transactions above $1000.00
   exclude_destinations: ["Coffee Shop", "Vending Machine", "ATM Withdrawal"]
 ```
 
@@ -267,6 +270,7 @@ filters:
 ```shell
 docker run -d \
   -e FILTER_MIN_AMOUNT=5.0 \
+  -e FILTER_MAX_AMOUNT=1000.0 \
   -e FILTER_EXCLUDE_DESTINATIONS='["Coffee Shop", "Vending Machine"]' \
   ...
 ```

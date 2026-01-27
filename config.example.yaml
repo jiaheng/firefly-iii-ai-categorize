@@ -51,6 +51,13 @@ filters:
   # Default: 0 (disabled)
   min_amount: 0
   
+  # Maximum transaction amount threshold
+  # Transactions with amount greater than this value will not be sent to OpenAI
+  # Set to 0 or omit to disable amount filtering
+  # Example: 1000.0 (will skip transactions above $1000.00)
+  # Default: 0 (disabled)
+  max_amount: 0
+  
   # List of destination names to exclude from categorization
   # Transactions with destination names matching any value in this list will be skipped
   # Use exact matches (case-sensitive)

@@ -40,6 +40,7 @@ const CONFIG_MAPPINGS = {
     'PORT': ['app', 'port'],
     'ENABLE_UI': ['app', 'enable_ui'],
     'FILTER_MIN_AMOUNT': ['filters', 'min_amount'],
+    'FILTER_MAX_AMOUNT': ['filters', 'max_amount'],
     'FILTER_EXCLUDE_DESTINATIONS': ['filters', 'exclude_destinations']
 };
 

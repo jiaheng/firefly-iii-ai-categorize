@@ -119,6 +119,19 @@ export default class App {
             }
         }
 
+        // Filter by maximum amount if configured
+        const maxAmount = getFilterConfig('max_amount', 0);
+        if (maxAmount > 0) {
+            const parsedAmount = parseFloat(req.body.content.transactions[0].amount);
+            if (isNaN(parsedAmount)) {
+                throw new WebhookException("Invalid transaction amount. Transaction will be ignored.");
+            }
+            const transactionAmount = Math.abs(parsedAmount);
+            if (transactionAmount > maxAmount) {
+                throw new WebhookException(`Transaction amount ${transactionAmount} is above maximum threshold ${maxAmount}. Transaction will be ignored.`);
+            }
+        }
+
         // Filter by excluded destinations if configured
         const excludeDestinations = getFilterConfig('exclude_destinations', []);
         if (Array.isArray(excludeDestinations) && excludeDestinations.length > 0) {
