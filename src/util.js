@@ -18,7 +18,7 @@ class MissingEnvironmentVariableException extends Error {
 
 // Load configuration from config.yaml if it exists
 let configFileData = null;
-const configPath = path.join(__dirname, '..', 'config.yaml');
+const configPath = process.env.CONFIG_FILE_PATH || path.join(__dirname, '..', 'config.yaml');
 
 try {
     if (fs.existsSync(configPath)) {

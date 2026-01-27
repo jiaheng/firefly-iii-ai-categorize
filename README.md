@@ -220,12 +220,23 @@ app:
 
 Mount this file to `/app/config.yaml` in your Docker container.
 
+You can also customize the config file location using the `CONFIG_FILE_PATH` environment variable:
+
+```shell
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/my-config.yaml:/app/my-config.yaml:ro \
+  -e CONFIG_FILE_PATH=/app/my-config.yaml \
+  ghcr.io/bahuma20/firefly-iii-ai-categorize:latest
+```
+
 ### Environment Variables (Alternative)
 
 You can also use environment variables for configuration. Environment variables will **override** values from the config file if both are present.
 
 ## Full list of configuration options
 
+- `CONFIG_FILE_PATH`: Path to the configuration file. (Default: `/app/config.yaml`)
 - `FIREFLY_URL` / `firefly.url`: The URL to your Firefly III instance. Example: `https://firefly.example.com`. (required)
 - `FIREFLY_PERSONAL_TOKEN` / `firefly.personal_token`: A Firefly III Personal Access Token. (required)
 - `OPENAI_API_KEY` / `openai.api_key`: The OpenAI API Key to authenticate against OpenAI. (required)
