@@ -1,5 +1,5 @@
 import express from "express";
-import {getConfigVariable} from "./util.js";
+import {getConfigVariable, getFilterConfig} from "./util.js";
 import FireflyService from "./FireflyService.js";
 import OpenAiService from "./OpenAiService.js";
 import {Server} from "socket.io";
@@ -104,6 +104,41 @@ export default class App {
 
         if (req.body.content.transactions[0].category_id !== null && req.body.content.transactions[0].category_id !== "") {
             throw new WebhookException("content.transactions[0].category_id is already set. Transaction will be ignored.");
+        }
+
+        // Filter by minimum amount if configured
+        const minAmount = getFilterConfig('min_amount', 0);
+        if (minAmount > 0) {
+            const parsedAmount = parseFloat(req.body.content.transactions[0].amount);
+            if (isNaN(parsedAmount)) {
+                throw new WebhookException("Invalid transaction amount. Transaction will be ignored.");
+            }
+            const transactionAmount = Math.abs(parsedAmount);
+            if (transactionAmount < minAmount) {
+                throw new WebhookException(`Transaction amount ${transactionAmount} is below minimum threshold ${minAmount}. Transaction will be ignored.`);
+            }
+        }
+
+        // Filter by maximum amount if configured
+        const maxAmount = getFilterConfig('max_amount', 0);
+        if (maxAmount > 0) {
+            const parsedAmount = parseFloat(req.body.content.transactions[0].amount);
+            if (isNaN(parsedAmount)) {
+                throw new WebhookException("Invalid transaction amount. Transaction will be ignored.");
+            }
+            const transactionAmount = Math.abs(parsedAmount);
+            if (transactionAmount > maxAmount) {
+                throw new WebhookException(`Transaction amount ${transactionAmount} is above maximum threshold ${maxAmount}. Transaction will be ignored.`);
+            }
+        }
+
+        // Filter by excluded destinations if configured
+        const excludeDestinations = getFilterConfig('exclude_destinations', []);
+        if (Array.isArray(excludeDestinations) && excludeDestinations.length > 0) {
+            const destinationName = req.body.content.transactions[0].destination_name;
+            if (excludeDestinations.includes(destinationName)) {
+                throw new WebhookException(`Destination name "${destinationName}" is in the exclusion list. Transaction will be ignored.`);
+            }
         }
 
         if (!req.body.content.transactions[0].description) {

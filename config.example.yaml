@@ -39,3 +39,29 @@ app:
   # Enable the web UI for monitoring
   # Default: false
   enable_ui: false
+
+# Transaction Filtering Configuration
+# These filters determine which transactions are sent to OpenAI for categorization
+# All filters are optional and can be omitted to disable filtering
+filters:
+  # Minimum transaction amount threshold
+  # Transactions with amount less than this value will not be sent to OpenAI
+  # Set to 0 or omit to disable amount filtering
+  # Example: 5.0 (will skip transactions below $5.00)
+  # Default: 0 (disabled)
+  min_amount: 0
+  
+  # Maximum transaction amount threshold
+  # Transactions with amount greater than this value will not be sent to OpenAI
+  # Set to 0 or omit to disable amount filtering
+  # Example: 1000.0 (will skip transactions above $1000.00)
+  # Default: 0 (disabled)
+  max_amount: 0
+  
+  # List of destination names to exclude from categorization
+  # Transactions with destination names matching any value in this list will be skipped
+  # Use exact matches (case-sensitive)
+  # Set to empty list [] or omit to disable destination filtering
+  # Example: ["Coffee Shop", "Vending Machine", "ATM Withdrawal"]
+  # Default: [] (disabled)
+  exclude_destinations: []

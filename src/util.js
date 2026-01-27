@@ -38,7 +38,10 @@ const CONFIG_MAPPINGS = {
     'OPENAI_API_KEY': ['openai', 'api_key'],
     'OPENAI_MODEL': ['openai', 'model'],
     'PORT': ['app', 'port'],
-    'ENABLE_UI': ['app', 'enable_ui']
+    'ENABLE_UI': ['app', 'enable_ui'],
+    'FILTER_MIN_AMOUNT': ['filters', 'min_amount'],
+    'FILTER_MAX_AMOUNT': ['filters', 'max_amount'],
+    'FILTER_EXCLUDE_DESTINATIONS': ['filters', 'exclude_destinations']
 };
 
 function getFromConfigFile(name) {
@@ -83,5 +86,50 @@ export function getConfigVariable(name, defaultValue = null) {
         throw new MissingEnvironmentVariableException(name)
     }
 
+    return defaultValue;
+}
+
+/**
+ * Get filter configuration with support for environment variables and config file
+ * This function returns the raw value without string conversion (useful for arrays and numbers)
+ * Priority: 1. Environment variable (if set), 2. Config file, 3. Default value
+ */
+export function getFilterConfig(filterName, defaultValue = null) {
+    // Check environment variable first (for consistency with getConfigVariable)
+    // Environment variables for filters use FILTER_ prefix
+    const envVarName = `FILTER_${filterName.toUpperCase()}`;
+    if (envVarName in process.env && process.env[envVarName] != null) {
+        const envValue = process.env[envVarName];
+        
+        // Try to parse JSON for arrays and objects (with additional validation)
+        const trimmedValue = envValue.trim();
+        if ((trimmedValue.startsWith('[') && trimmedValue.endsWith(']')) || 
+            (trimmedValue.startsWith('{') && trimmedValue.endsWith('}'))) {
+            try {
+                return JSON.parse(trimmedValue);
+            } catch (e) {
+                console.warn(`Failed to parse ${envVarName} as JSON, using as string:`, e.message);
+                return envValue;
+            }
+        }
+        
+        // Try to parse as number (only if it's a valid numeric string)
+        if (envValue.trim() !== '' && !isNaN(envValue)) {
+            return parseFloat(envValue);
+        }
+        
+        // Return as string
+        return envValue;
+    }
+    
+    // Check config file
+    if (configFileData && configFileData.filters) {
+        const value = configFileData.filters[filterName];
+        if (value !== undefined) {
+            return value;
+        }
+    }
+    
+    // Return default value
     return defaultValue;
 }
