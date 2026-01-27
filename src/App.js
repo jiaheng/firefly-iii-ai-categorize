@@ -110,6 +110,9 @@ export default class App {
         const minAmount = getFilterConfig('min_amount', 0);
         if (minAmount > 0) {
             const transactionAmount = Math.abs(parseFloat(req.body.content.transactions[0].amount));
+            if (isNaN(transactionAmount)) {
+                throw new WebhookException("Invalid transaction amount. Transaction will be ignored.");
+            }
             if (transactionAmount < minAmount) {
                 throw new WebhookException(`Transaction amount ${transactionAmount} is below minimum threshold ${minAmount}. Transaction will be ignored.`);
             }

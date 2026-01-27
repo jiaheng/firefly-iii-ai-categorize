@@ -89,15 +89,44 @@ export function getConfigVariable(name, defaultValue = null) {
 }
 
 /**
- * Get filter configuration directly from the config file
- * This function returns the raw value without string conversion
- * Useful for getting arrays and numbers
+ * Get filter configuration with support for environment variables and config file
+ * This function returns the raw value without string conversion (useful for arrays and numbers)
+ * Priority: 1. Environment variable (if set), 2. Config file, 3. Default value
  */
 export function getFilterConfig(filterName, defaultValue = null) {
-    if (!configFileData || !configFileData.filters) {
-        return defaultValue;
+    // Check environment variable first (for consistency with getConfigVariable)
+    // Environment variables for filters use FILTER_ prefix
+    const envVarName = `FILTER_${filterName.toUpperCase()}`;
+    if (process.env.hasOwnProperty(envVarName) && process.env[envVarName] != null) {
+        const envValue = process.env[envVarName];
+        
+        // Try to parse JSON for arrays and objects
+        if (envValue.startsWith('[') || envValue.startsWith('{')) {
+            try {
+                return JSON.parse(envValue);
+            } catch (e) {
+                console.warn(`Failed to parse ${envVarName} as JSON:`, e.message);
+            }
+        }
+        
+        // Try to parse as number
+        const numValue = Number(envValue);
+        if (!isNaN(numValue)) {
+            return numValue;
+        }
+        
+        // Return as string
+        return envValue;
     }
-
-    const value = configFileData.filters[filterName];
-    return value !== undefined ? value : defaultValue;
+    
+    // Check config file
+    if (configFileData && configFileData.filters) {
+        const value = configFileData.filters[filterName];
+        if (value !== undefined) {
+            return value;
+        }
+    }
+    
+    // Return default value
+    return defaultValue;
 }
