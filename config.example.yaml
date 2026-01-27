@@ -42,6 +42,13 @@ openai:
   # Default: 0.3
   temperature: 0.3
   
+  # Pass transaction notes to OpenAI for categorization
+  # When enabled, transaction notes (if present) will be included in the
+  # OpenAI API payload to provide additional context for categorization
+  # Note: This sends the note field to OpenAI's API
+  # Default: false
+  pass_note_to_openai: false
+  
   # Web search options for enhanced categorization (optional)
   # Enables the model to use web search for better context
   # Uncomment and configure if you want to enable web search

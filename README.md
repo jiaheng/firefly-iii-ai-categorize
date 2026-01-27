@@ -26,11 +26,15 @@ If it cannot detect the category, it will not update anything.
 
 Please note that some details of the transactions will be sent to OpenAI as information to guess the category.
 
-These are:
+By default, these are:
 
 - Transaction description
 - Name of transaction destination account
 - Names of all categories
+
+Optionally, if you enable the `pass_note_to_openai` configuration option (disabled by default):
+
+- Transaction notes (if present)
 
 ## Installation
 
@@ -214,6 +218,7 @@ openai:
   model: "gpt-4o-mini"
   max_completion_tokens: 5000  # Maximum tokens for response
   temperature: 0.3  # Response consistency (0.0-2.0)
+  pass_note_to_openai: false  # Include transaction notes in OpenAI API calls
   # Optional: Enable web search for enhanced categorization
   # Requires a model that supports web search (e.g., gpt-4o-search-preview)
   # web_search_options:
@@ -259,6 +264,7 @@ You can also use environment variables for configuration. Environment variables 
 - `OPENAI_MODEL` / `openai.model`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
 - `OPENAI_MAX_COMPLETION_TOKENS` / `openai.max_completion_tokens`: Maximum number of tokens for completion. Controls response length and cost. (Default: `5000`)
 - `OPENAI_TEMPERATURE` / `openai.temperature`: Temperature for model responses (0.0 to 2.0). Lower values make responses more consistent. (Default: `0.3`)
+- `OPENAI_PASS_NOTE_TO_OPENAI` / `openai.pass_note_to_openai`: If transaction notes (if present) should be included in the OpenAI API payload for categorization. This provides additional context but sends more data to OpenAI. (Default: `false`)
 - `OPENAI_WEB_SEARCH_OPTIONS` / `openai.web_search_options`: Web search options for enhanced categorization (optional). Must be a JSON object with the structure: `{"user_location": {"type": "approximate", "approximate": {"country": "US"}}}`. Requires a model that supports web search (e.g., `gpt-4o-search-preview`)
 - `ENABLE_UI` / `app.enable_ui`: If the user interface should be enabled. (Default: `false`)
 - `FIREFLY_TAG` / `firefly.tag`: The tag to assign to the processed transactions. (Default: `AI categorized`)
@@ -330,6 +336,30 @@ Or using environment variables:
 ```shell
 docker run -d \
   -e OPENAI_TEMPERATURE=0.3 \
+  ...
+```
+
+### Transaction Notes
+
+The `pass_note_to_openai` parameter controls whether transaction notes are included in the OpenAI API calls for categorization. This is disabled by default to minimize data sent to OpenAI.
+
+When enabled, transaction notes (if present) will be included in the prompt sent to OpenAI, providing additional context that may improve categorization accuracy. This is particularly useful if your transaction notes contain relevant details like:
+- Business purpose or project information
+- Tax-related notes
+- Specific context about the purchase
+
+**Important:** Enabling this feature sends additional transaction data to OpenAI's API. Review your privacy requirements before enabling.
+
+**Configuration example:**
+```yaml
+openai:
+  pass_note_to_openai: false  # Default: false
+```
+
+Or using environment variables:
+```shell
+docker run -d \
+  -e OPENAI_PASS_NOTE_TO_OPENAI=true \
   ...
 ```
 

@@ -35,9 +35,9 @@ export default class OpenAiService {
         });
     }
 
-    async classify(categories, destinationName, description) {
+    async classify(categories, destinationName, description, note = null) {
         try {
-            const userPrompt = this.#generatePrompt(categories, destinationName, description);
+            const userPrompt = this.#generatePrompt(categories, destinationName, description, note);
 
             const requestParams = {
                 model: this.#model,
@@ -94,10 +94,18 @@ export default class OpenAiService {
         }
     }
 
-    #generatePrompt(categories, destinationName, description) {
-        return `Given I want to categorize transactions on my bank account into these categories: ${categories.join(", ")}
-In which category would a transaction from "${destinationName}" with the subject "${description}" fall into?
+    #generatePrompt(categories, destinationName, description, note = null) {
+        let prompt = `Given I want to categorize transactions on my bank account into these categories: ${categories.join(", ")}
+In which category would a transaction from "${destinationName}" with the subject "${description}"`;
+        
+        if (note) {
+            prompt += ` and note "${note}"`;
+        }
+        
+        prompt += ` fall into?
 Just output the category name.`;
+        
+        return prompt;
     }
 }
 
