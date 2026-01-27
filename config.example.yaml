@@ -39,6 +39,8 @@ openai:
   # Temperature for model responses (0.0 to 2.0)
   # Lower values (e.g., 0.3) make responses more consistent and deterministic
   # Higher values make responses more creative but less predictable
+  # Set to null to omit the temperature parameter entirely from the OpenAI API request
+  # This is useful for models that don't support the temperature parameter (e.g., gpt-4o-search-preview)
   # Default: 0.3
   temperature: 0.3
   

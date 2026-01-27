@@ -263,7 +263,7 @@ You can also use environment variables for configuration. Environment variables 
 - `OPENAI_API_KEY` / `openai.api_key`: The OpenAI API Key to authenticate against OpenAI. (required)
 - `OPENAI_MODEL` / `openai.model`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
 - `OPENAI_MAX_COMPLETION_TOKENS` / `openai.max_completion_tokens`: Maximum number of tokens for completion. Controls response length and cost. (Default: `5000`)
-- `OPENAI_TEMPERATURE` / `openai.temperature`: Temperature for model responses (0.0 to 2.0). Lower values make responses more consistent. (Default: `0.3`)
+- `OPENAI_TEMPERATURE` / `openai.temperature`: Temperature for model responses (0.0 to 2.0). Lower values make responses more consistent. Set to `null` or empty string to omit the parameter entirely (useful for models that don't support it, e.g., `gpt-4o-search-preview`). (Default: `0.3`)
 - `OPENAI_PASS_NOTE_TO_OPENAI` / `openai.pass_note_to_openai`: If transaction notes (if present) should be included in the OpenAI API payload for categorization. This provides additional context but sends more data to OpenAI. (Default: `false`)
 - `OPENAI_WEB_SEARCH_OPTIONS` / `openai.web_search_options`: Web search options for enhanced categorization (optional). Must be a JSON object with the structure: `{"user_location": {"type": "approximate", "approximate": {"country": "US"}}}`. Requires a model that supports web search (e.g., `gpt-4o-search-preview`)
 - `ENABLE_UI` / `app.enable_ui`: If the user interface should be enabled. (Default: `false`)
@@ -326,16 +326,27 @@ The `temperature` parameter (0.0 to 2.0) controls the randomness of responses:
 
 The default value is 0.3, which provides consistent categorization results.
 
+**Omitting the temperature parameter:**
+Some OpenAI models (e.g., `gpt-4o-search-preview`) do not support the `temperature` parameter. To omit it entirely from the API request, set the value to `null` in your config file or set the environment variable to an empty string or "null".
+
 **Configuration example:**
 ```yaml
 openai:
   temperature: 0.3  # Default: 0.3 (range: 0.0-2.0)
+  # temperature: null  # Omit temperature parameter for models that don't support it
 ```
 
 Or using environment variables:
 ```shell
 docker run -d \
   -e OPENAI_TEMPERATURE=0.3 \
+  ...
+```
+
+To omit the temperature parameter via environment variable:
+```shell
+docker run -d \
+  -e OPENAI_TEMPERATURE=null \
   ...
 ```
 
