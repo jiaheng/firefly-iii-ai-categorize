@@ -1,14 +1,34 @@
 import OpenAI from "openai";
-import {getConfigVariable} from "./util.js";
+import {getConfigVariable, getOpenAiConfig, validateWebSearchOptions} from "./util.js";
 
 export default class OpenAiService {
     #openAi;
     #model;
+    #maxCompletionTokens;
+    #temperature;
+    #webSearchOptions;
 
     constructor() {
         const apiKey = getConfigVariable("OPENAI_API_KEY");
         // Default to gpt-4o-mini (modern, cheaper, faster) but allow configuration
         this.#model = getConfigVariable("OPENAI_MODEL", "gpt-4o-mini");
+        
+        // Get max_completion_tokens from config (default: 5000)
+        this.#maxCompletionTokens = getOpenAiConfig("max_completion_tokens", 5000);
+        
+        // Get temperature from config (default: 0.3)
+        this.#temperature = getOpenAiConfig("temperature", 0.3);
+        
+        // Get web_search_options from config (default: null)
+        this.#webSearchOptions = getOpenAiConfig("web_search_options", null);
+        
+        // Validate web_search_options if provided
+        try {
+            validateWebSearchOptions(this.#webSearchOptions);
+        } catch (error) {
+            console.error('Invalid web_search_options configuration:', error.message);
+            throw error;
+        }
 
         this.#openAi = new OpenAI({
             apiKey
@@ -19,7 +39,7 @@ export default class OpenAiService {
         try {
             const userPrompt = this.#generatePrompt(categories, destinationName, description);
 
-            const response = await this.#openAi.chat.completions.create({
+            const requestParams = {
                 model: this.#model,
                 messages: [
                     {
@@ -31,9 +51,16 @@ export default class OpenAiService {
                         content: userPrompt
                     }
                 ],
-                temperature: 0.3, // Lower temperature for more consistent categorization
-                max_tokens: 50 // Keep responses short
-            });
+                temperature: this.#temperature,
+                max_completion_tokens: this.#maxCompletionTokens
+            };
+            
+            // Add web_search_options if configured
+            if (this.#webSearchOptions) {
+                requestParams.web_search_options = this.#webSearchOptions;
+            }
+
+            const response = await this.#openAi.chat.completions.create(requestParams);
 
             // Validate response structure
             if (!response.choices || !response.choices[0] || !response.choices[0].message || !response.choices[0].message.content) {

@@ -212,6 +212,17 @@ firefly:
 openai:
   api_key: "your-api-key-here"
   model: "gpt-4o-mini"
+  max_completion_tokens: 5000  # Maximum tokens for response
+  temperature: 0.3  # Response consistency (0.0-2.0)
+  # Optional: Enable web search for enhanced categorization
+  # Requires a model that supports web search (e.g., gpt-4o-search-preview)
+  # web_search_options:
+  #   user_location:
+  #     type: "approximate"
+  #     approximate:
+  #       country: "US"  # ISO 3166-1 alpha-2 country code (required)
+  #       city: "Seattle"  # Optional but recommended
+  #       region: "WA"     # Optional but recommended
 
 app:
   port: 3000
@@ -246,6 +257,9 @@ You can also use environment variables for configuration. Environment variables 
 - `FIREFLY_PERSONAL_TOKEN` / `firefly.personal_token`: A Firefly III Personal Access Token. (required)
 - `OPENAI_API_KEY` / `openai.api_key`: The OpenAI API Key to authenticate against OpenAI. (required)
 - `OPENAI_MODEL` / `openai.model`: The OpenAI model to use for categorization. (Default: `gpt-4o-mini`) See [Model Selection](#model-selection) for details.
+- `OPENAI_MAX_COMPLETION_TOKENS` / `openai.max_completion_tokens`: Maximum number of tokens for completion. Controls response length and cost. (Default: `5000`)
+- `OPENAI_TEMPERATURE` / `openai.temperature`: Temperature for model responses (0.0 to 2.0). Lower values make responses more consistent. (Default: `0.3`)
+- `OPENAI_WEB_SEARCH_OPTIONS` / `openai.web_search_options`: Web search options for enhanced categorization (optional). Must be a JSON object with the structure: `{"user_location": {"type": "approximate", "approximate": {"country": "US"}}}`. Requires a model that supports web search (e.g., `gpt-4o-search-preview`)
 - `ENABLE_UI` / `app.enable_ui`: If the user interface should be enabled. (Default: `false`)
 - `FIREFLY_TAG` / `firefly.tag`: The tag to assign to the processed transactions. (Default: `AI categorized`)
 - `PORT` / `app.port`: The port where the application listens. (Default: `3000`)
@@ -278,6 +292,83 @@ docker run -d \
 **Note:** All filters are applied after the existing category check. Transactions that already have a category will always be skipped, regardless of filter settings.
 
 **Note:** For each option, you can use either the environment variable format (e.g., `FIREFLY_URL`) or the config file path (e.g., `firefly.url`).
+
+## Advanced OpenAI Configuration
+
+### Maximum Completion Tokens
+
+The `max_completion_tokens` parameter controls the maximum length of the generated response. The default value is 5000, which is sufficient for most categorization tasks.
+
+**Configuration example:**
+```yaml
+openai:
+  max_completion_tokens: 5000  # Default: 5000
+```
+
+Or using environment variables:
+```shell
+docker run -d \
+  -e OPENAI_MAX_COMPLETION_TOKENS=5000 \
+  ...
+```
+
+### Temperature
+
+The `temperature` parameter (0.0 to 2.0) controls the randomness of responses:
+- Lower values (e.g., 0.3) make responses more consistent and deterministic - recommended for categorization
+- Higher values make responses more creative but less predictable
+
+The default value is 0.3, which provides consistent categorization results.
+
+**Configuration example:**
+```yaml
+openai:
+  temperature: 0.3  # Default: 0.3 (range: 0.0-2.0)
+```
+
+Or using environment variables:
+```shell
+docker run -d \
+  -e OPENAI_TEMPERATURE=0.3 \
+  ...
+```
+
+### Web Search Options
+
+The `web_search_options` parameter enables the model to use web search for enhanced categorization. This is useful for localization and getting better context for specific regions.
+
+**Important:** This feature requires a model that supports web search, such as `gpt-4o-search-preview`. The default model `gpt-4o-mini` does not support this feature.
+
+**Required fields when providing `user_location`:**
+- `user_location.type`: Must be `"approximate"`
+- `user_location.approximate.country`: ISO 3166-1 alpha-2 country code (e.g., "US", "GB", "CA", "DE")
+
+**Optional fields (recommended for better results):**
+- `user_location.approximate.city`: City name
+- `user_location.approximate.region`: State or region name
+
+**Configuration example:**
+```yaml
+openai:
+  model: "gpt-4o-search-preview"  # Required for web search
+  web_search_options:
+    user_location:
+      type: "approximate"
+      approximate:
+        country: "US"
+        city: "Seattle"
+        region: "WA"
+```
+
+Or using environment variables (must be valid JSON):
+```shell
+docker run -d \
+  -e OPENAI_MODEL="gpt-4o-search-preview" \
+  -e OPENAI_WEB_SEARCH_OPTIONS='{"user_location": {"type": "approximate", "approximate": {"country": "US", "city": "Seattle", "region": "WA"}}}' \
+  ...
+```
+
+**Note:** When using `web_search_options`, you must provide the correct structure with `type: "approximate"` and an `approximate` object containing at least the `country` field.
 
 ## Model Selection
 

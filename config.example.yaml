@@ -29,6 +29,30 @@ openai:
   #   - gpt-3.5-turbo: More economical alternative
   # Default: gpt-4o-mini
   model: "gpt-4o-mini"
+  
+  # Maximum number of tokens for completion
+  # Controls the maximum length of the generated response
+  # Higher values allow longer responses but increase cost
+  # Default: 5000
+  max_completion_tokens: 5000
+  
+  # Temperature for model responses (0.0 to 2.0)
+  # Lower values (e.g., 0.3) make responses more consistent and deterministic
+  # Higher values make responses more creative but less predictable
+  # Default: 0.3
+  temperature: 0.3
+  
+  # Web search options for enhanced categorization (optional)
+  # Enables the model to use web search for better context
+  # Uncomment and configure if you want to enable web search
+  # Note: Requires a model that supports web search (e.g., gpt-4o-search-preview)
+  # web_search_options:
+  #   user_location:
+  #     type: "approximate"
+  #     approximate:
+  #       country: "US"    # ISO 3166-1 alpha-2 country code (required)
+  #       city: "Seattle"  # City name (optional, recommended for better results)
+  #       region: "WA"     # State/region (optional, recommended for better results)
 
 # Application Configuration
 app:
