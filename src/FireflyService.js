@@ -67,6 +67,10 @@ export default class FireflyService {
                 ct => ct.transaction_journal_id === transaction.transaction_journal_id
             );
             
+            if (!currentTransaction) {
+                console.warn(`Warning: Could not find matching transaction with journal ID ${transaction.transaction_journal_id}. Tags may be incomplete.`);
+            }
+            
             // Get the current tags from the fetched transaction
             let tags = currentTransaction?.tags || [];
             if (!Array.isArray(tags)) {
