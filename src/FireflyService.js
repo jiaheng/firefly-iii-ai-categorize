@@ -61,9 +61,14 @@ export default class FireflyService {
             transactions: [],
         }
 
-        transactions.forEach((transaction, index) => {
+        transactions.forEach((transaction) => {
+            // Find the matching transaction by transaction_journal_id
+            const currentTransaction = currentTransactions.find(
+                ct => ct.transaction_journal_id === transaction.transaction_journal_id
+            );
+            
             // Get the current tags from the fetched transaction
-            let tags = currentTransactions[index]?.tags || [];
+            let tags = currentTransaction?.tags || [];
             if (!Array.isArray(tags)) {
                 tags = [];
             }
