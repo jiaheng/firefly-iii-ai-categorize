@@ -413,7 +413,7 @@ docker run -d \
 
 ## Model Selection
 
-The application now uses modern OpenAI chat models for better performance and cost-efficiency. The default model is `gpt-4o-mini`, which provides excellent accuracy at a lower cost compared to legacy models.
+The application now uses the modern OpenAI Response API for better performance, cost-efficiency, and future compatibility. The default model is `gpt-4o-mini`, which provides excellent accuracy at a lower cost compared to legacy models.
 
 ### Recommended Models
 
@@ -428,12 +428,12 @@ environment:
   OPENAI_MODEL: "gpt-4o-mini"  # or "gpt-4o", "gpt-3.5-turbo"
 ```
 
-### Migration from Legacy Model
+### Migration from Chat Completion API to Response API
 
-If you were previously using this application, it has been upgraded from the legacy `gpt-3.5-turbo-instruct` model to modern chat completion models. The new default model (`gpt-4o-mini`) is:
-- More accurate and capable
-- Faster response times
-- More cost-effective (lower pricing per token)
-- Better maintained and future-proof
+The application has been updated to use OpenAI's Response API instead of the Chat Completion API. This change:
+- Improves performance and reduces costs through better caching
+- Provides better support for future models and features
+- Maintains full backward compatibility with existing configurations
+- No configuration changes are required
 
-No configuration changes are required - the application will automatically use the new model. However, if you prefer a different model, you can set the `OPENAI_MODEL` environment variable as described above.
+If you were previously using this application, the migration to the Response API is automatic. All your existing configuration (including `max_completion_tokens`) continues to work as before.
