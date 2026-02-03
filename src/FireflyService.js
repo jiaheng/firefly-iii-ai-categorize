@@ -68,13 +68,14 @@ export default class FireflyService {
             );
             
             if (!currentTransaction) {
-                console.warn(`Could not find matching transaction with journal ID ${transaction.transaction_journal_id}. Using tags from webhook payload as fallback.`);
+                console.warn(`Could not find matching transaction with journal ID ${transaction.transaction_journal_id} for transaction ${transactionId}. Using tags from webhook payload as fallback.`);
             }
             
             // Get the current tags from the fetched transaction, or fallback to webhook tags
+            // Create a shallow copy to avoid mutating the original array
             let tags = Array.isArray(currentTransaction?.tags) 
-                ? currentTransaction.tags 
-                : (Array.isArray(transaction.tags) ? transaction.tags : []);
+                ? [...currentTransaction.tags]
+                : (Array.isArray(transaction.tags) ? [...transaction.tags] : []);
             
             // Only append the tag if it doesn't already exist
             if (!tags.includes(tag)) {
