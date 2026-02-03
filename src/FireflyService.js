@@ -79,8 +79,8 @@ export default class FireflyService {
             const currentTags = Array.isArray(currentTransaction?.tags) ? currentTransaction.tags : [];
             const webhookTags = Array.isArray(transaction.tags) ? transaction.tags : [];
             
-            // Combine and deduplicate tags from both sources
-            let tags = [...currentTags, ...webhookTags].filter((tag, index, self) => self.indexOf(tag) === index);
+            // Combine and deduplicate tags from both sources using Set
+            let tags = [...new Set([...currentTags, ...webhookTags])];
             
             // Only append the tag if it doesn't already exist
             if (!tags.includes(tag)) {
