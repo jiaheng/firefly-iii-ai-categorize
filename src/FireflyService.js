@@ -42,7 +42,7 @@ export default class FireflyService {
         });
 
         if (!response.ok) {
-            throw new FireflyException(response.status, response, await response.text())
+            throw new FireflyException(response.status, response, await response.text());
         }
 
         const data = await response.json();
@@ -72,10 +72,7 @@ export default class FireflyService {
             }
             
             // Get the current tags from the fetched transaction
-            let tags = currentTransaction?.tags || [];
-            if (!Array.isArray(tags)) {
-                tags = [];
-            }
+            let tags = Array.isArray(currentTransaction?.tags) ? currentTransaction.tags : [];
             
             // Only append the tag if it doesn't already exist
             if (!tags.includes(tag)) {
