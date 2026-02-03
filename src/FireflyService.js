@@ -55,6 +55,11 @@ export default class FireflyService {
         // Fetch the current transaction to get the latest tags
         const currentTransactions = await this.getTransaction(transactionId);
 
+        // Create a Map for efficient lookup by transaction_journal_id
+        const transactionMap = new Map(
+            currentTransactions.map(t => [t.transaction_journal_id, t])
+        );
+
         const body = {
             apply_rules: true,
             fire_webhooks: true,
@@ -63,12 +68,10 @@ export default class FireflyService {
 
         transactions.forEach((transaction) => {
             // Find the matching transaction by transaction_journal_id
-            const currentTransaction = currentTransactions.find(
-                ct => ct.transaction_journal_id === transaction.transaction_journal_id
-            );
+            const currentTransaction = transactionMap.get(transaction.transaction_journal_id);
             
             if (!currentTransaction) {
-                console.warn(`Could not find matching transaction with journal ID ${transaction.transaction_journal_id} for transaction ${transactionId}. Using tags from webhook payload as fallback.`);
+                console.warn(`Could not find matching transaction with journal ID ${transaction.transaction_journal_id} for transaction group ${transactionId}. Using tags from webhook payload as fallback.`);
             }
             
             // Get the current tags from the fetched transaction, or fallback to webhook tags
