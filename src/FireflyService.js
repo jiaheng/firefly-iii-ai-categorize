@@ -68,7 +68,7 @@ export default class FireflyService {
             );
             
             if (!currentTransaction) {
-                console.warn(`Warning: Could not find matching transaction with journal ID ${transaction.transaction_journal_id}. Using tags from webhook payload as fallback.`);
+                console.warn(`Could not find matching transaction with journal ID ${transaction.transaction_journal_id}. Using tags from webhook payload as fallback.`);
             }
             
             // Get the current tags from the fetched transaction, or fallback to webhook tags
