@@ -34,8 +34,26 @@ export default class FireflyService {
         return categories;
     }
 
+    async getTransaction(transactionId) {
+        const response = await fetch(`${this.#BASE_URL}/api/v1/transactions/${transactionId}`, {
+            headers: {
+                Authorization: `Bearer ${this.#PERSONAL_TOKEN}`,
+            }
+        });
+
+        if (!response.ok) {
+            throw new FireflyException(response.status, response, await response.text())
+        }
+
+        const data = await response.json();
+        return data.data.attributes.transactions;
+    }
+
     async setCategory(transactionId, transactions, categoryId) {
         const tag = getConfigVariable("FIREFLY_TAG", "AI categorized");
+
+        // Fetch the current transaction to get the latest tags
+        const currentTransactions = await this.getTransaction(transactionId);
 
         const body = {
             apply_rules: true,
@@ -43,12 +61,17 @@ export default class FireflyService {
             transactions: [],
         }
 
-        transactions.forEach(transaction => {
-            let tags = transaction.tags;
-            if (!tags) {
+        transactions.forEach((transaction, index) => {
+            // Get the current tags from the fetched transaction
+            let tags = currentTransactions[index]?.tags || [];
+            if (!Array.isArray(tags)) {
                 tags = [];
             }
-            tags.push(tag);
+            
+            // Only append the tag if it doesn't already exist
+            if (!tags.includes(tag)) {
+                tags.push(tag);
+            }
 
             body.transactions.push({
                 transaction_journal_id: transaction.transaction_journal_id,
