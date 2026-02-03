@@ -41,17 +41,9 @@ export default class OpenAiService {
 
             const requestParams = {
                 model: this.#model,
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are a financial transaction categorization assistant. Your task is to categorize bank transactions into predefined categories. You must respond with ONLY the exact category name from the provided list, nothing else."
-                    },
-                    {
-                        role: "user",
-                        content: userPrompt
-                    }
-                ],
-                max_completion_tokens: this.#maxCompletionTokens
+                instructions: "You are a financial transaction categorization assistant. Your task is to categorize bank transactions into predefined categories. You must respond with ONLY the exact category name from the provided list, nothing else.",
+                input: userPrompt,
+                max_output_tokens: this.#maxCompletionTokens
             };
             
             // Add temperature if configured (omit if null to support models that don't accept it)
@@ -64,15 +56,15 @@ export default class OpenAiService {
                 requestParams.web_search_options = this.#webSearchOptions;
             }
 
-            const response = await this.#openAi.chat.completions.create(requestParams);
+            const response = await this.#openAi.responses.create(requestParams);
 
             // Validate response structure
-            if (!response.choices || !response.choices[0] || !response.choices[0].message || !response.choices[0].message.content) {
+            if (!response.output_text) {
                 console.error('Invalid response structure from OpenAI:', JSON.stringify(response));
                 return null;
             }
 
-            const messageContent = response.choices[0].message.content;
+            const messageContent = response.output_text;
             let guess = messageContent.replace(/[\n\r]+/g, "").trim();
 
             if (categories.indexOf(guess) === -1) {
