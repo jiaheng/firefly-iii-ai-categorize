@@ -75,17 +75,13 @@ export default class FireflyService {
             }
             
             // Merge tags from both the fetched transaction and webhook payload
-            // Create a shallow copy to avoid mutating the original arrays
-            const currentTags = Array.isArray(currentTransaction?.tags) ? currentTransaction.tags : [];
-            const webhookTags = Array.isArray(transaction.tags) ? transaction.tags : [];
+            // Create shallow copies to avoid mutating the original arrays
+            const currentTags = Array.isArray(currentTransaction?.tags) ? [...currentTransaction.tags] : [];
+            const webhookTags = Array.isArray(transaction.tags) ? [...transaction.tags] : [];
             
-            // Combine and deduplicate tags from both sources using Set
-            let tags = [...new Set([...currentTags, ...webhookTags])];
-            
-            // Only append the tag if it doesn't already exist
-            if (!tags.includes(tag)) {
-                tags.push(tag);
-            }
+            // Combine and deduplicate tags from both sources, including the AI categorizer tag
+            const tagSet = new Set([...currentTags, ...webhookTags, tag]);
+            let tags = [...tagSet];
 
             body.transactions.push({
                 transaction_journal_id: transaction.transaction_journal_id,
