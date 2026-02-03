@@ -73,9 +73,12 @@ export default class FireflyService {
             
             // Get the current tags from the fetched transaction, or fallback to webhook tags
             // Create a shallow copy to avoid mutating the original array
-            let tags = Array.isArray(currentTransaction?.tags) 
-                ? [...currentTransaction.tags]
-                : (Array.isArray(transaction.tags) ? [...transaction.tags] : []);
+            let tags = [];
+            if (Array.isArray(currentTransaction?.tags)) {
+                tags = [...currentTransaction.tags];
+            } else if (Array.isArray(transaction.tags)) {
+                tags = [...transaction.tags];
+            }
             
             // Only append the tag if it doesn't already exist
             if (!tags.includes(tag)) {
