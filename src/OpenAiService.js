@@ -51,9 +51,18 @@ export default class OpenAiService {
                 requestParams.temperature = this.#temperature;
             }
             
-            // Add web_search_options if configured
+            // Add web search tool if configured (Response API uses `tools`, not `web_search_options`)
             if (this.#webSearchOptions) {
-                requestParams.web_search_options = this.#webSearchOptions;
+                const tool = { type: "web_search" };
+                const approximate = this.#webSearchOptions.user_location?.approximate;
+                if (approximate) {
+                    tool.user_location = {
+                        country: approximate.country,
+                        ...(approximate.city ? { city: approximate.city } : {}),
+                        ...(approximate.region ? { region: approximate.region } : {}),
+                    };
+                }
+                requestParams.tools = [...(requestParams.tools ?? []), tool];
             }
 
             const response = await this.#openAi.responses.create(requestParams);
