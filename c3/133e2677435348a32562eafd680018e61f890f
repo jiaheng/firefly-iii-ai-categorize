@@ -1,0 +1,19 @@
+src/OpenAiService.js
+  s_71307db7e4fa86::t_3b2472f933b893 54,56-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c3133e2677435348a32562eafd680018e61f890f",
+  "prompts": {},
+  "sessions": {
+    "s_71307db7e4fa86": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "169b9ba0-8d0f-41a0-ba69-259cfd2d9ac5",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "JiaHeng <5684003+jiaheng@users.noreply.github.com>"
+    }
+  }
+}
